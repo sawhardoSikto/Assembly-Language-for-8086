@@ -1,0 +1,603 @@
+slide 4
+task:1)
+
+.MODEL SMALL
+.STACK 100h
+
+.DATA
+msg db 0dh,0ah, 'Hello, World$'  
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA   
+    MOV DS, AX
+
+start:               
+    MOV AH, 09h      
+    LEA DX, msg      
+    INT 21h          
+    JMP start        
+
+MAIN ENDP
+END MAIN
+
+task:2)
+
+.MODEL SMALL
+.STACK 100h
+
+.DATA
+hello_msg db 0dh,0ah,'Hello World$'
+
+bye_msg   db 0dh,0ah,'Bye World$'
+
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX          
+
+    MOV CX,0           
+
+print_hello:
+    MOV AH,09h
+    LEA DX,hello_msg
+    INT 21h            
+
+    INC CX             
+    CMP CX,5           
+    JNE print_hello    
+
+    
+    MOV AH,09h
+    LEA DX,bye_msg
+    INT 21h
+
+    MOV AH,4Ch         
+    INT 21h
+MAIN ENDP
+END MAIN
+
+task:3)
+
+.MODEL SMALL
+.STACK 100h
+
+.DATA
+msg1 db 0dh,0ah,'Enter a number: $'
+pos_msg db 0dh,0ah,'Positive$'
+neg_msg db 0dh,0ah,'Negative$'
+
+num DW ?   
+
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX           
+
+    
+    MOV AH,09h
+    LEA DX,msg1
+    INT 21h
+
+    
+    MOV AH,01h          
+    INT 21h
+    SUB AL,'0'          
+    MOV BL,AL
+    CBW                 
+    MOV num,AX         
+
+    
+    MOV AX,num
+    CMP AX,0
+    JL  negative       
+    JG  positive       
+
+    JMP end_prog        
+
+positive:
+    MOV AH,09h
+    LEA DX,pos_msg
+    INT 21h
+    JMP end_prog
+
+negative:
+    MOV AH,09h
+    LEA DX,neg_msg
+    INT 21h
+
+end_prog:
+    MOV AH,4Ch          
+    INT 21h
+
+MAIN ENDP
+END MAIN
+
+task:4)
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+    msgInput DB 'Enter a number: $'
+    msgLess  DB 10,13,'Less than 5$'
+    msgGreater DB 10,13,'Greater than 5$'
+    msgEqual DB 10,13,'Equal to 5$'
+    inputNum DB ?
+
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX
+
+    
+    MOV AH,09H
+    LEA DX,msgInput
+    INT 21H
+
+    
+    MOV AH,01H
+    INT 21H
+    SUB AL, '0'        
+    MOV inputNum, AL
+
+    
+    MOV CL, 5
+    MOV AL, inputNum
+    CMP AL, CL
+    JE EqualLabel
+    JL LessLabel
+    JG GreaterLabel
+
+LessLabel:
+    MOV AH,09H
+    LEA DX,msgLess
+    INT 21H
+    JMP EndProg
+
+GreaterLabel:
+    MOV AH,09H
+    LEA DX,msgGreater
+    INT 21H
+    JMP EndProg
+
+EqualLabel:
+    MOV AH,09H
+    LEA DX,msgEqual
+    INT 21H
+
+EndProg:
+    MOV AH,4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+
+task:5)
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    prompt  DB 'Enter your password: $'
+    success DB 0DH,0AH,'Password Matched$'
+    fail    DB 0DH,0AH,'Password Not Matched$'
+
+    password DB 'mypassword$'      
+    input    DB 20 DUP('$')        
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+start:
+    
+    MOV AH, 09H
+    LEA DX, prompt
+    INT 21H
+
+    
+    LEA DI, input     
+
+read_input:
+    MOV AH, 01H           
+    INT 21H
+    CMP AL, 0DH          
+    JE compare_start
+    STOSB                 
+    JMP read_input
+
+compare_start:
+    MOV AL, '$'
+    STOSB                
+
+    
+    LEA SI, password
+    LEA DI, input
+
+compare_loop:
+    LODSB
+    SCASB
+    JNE not_matched     
+    CMP AL, '$'
+    JE matched           
+    JMP compare_loop
+
+matched:
+    MOV AH, 09H
+    LEA DX, success
+    INT 21H
+    JMP exit
+
+not_matched:
+    MOV AH, 09H
+    LEA DX, fail
+    INT 21H
+
+exit:
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
+
+task:6)
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    msg1 DB 'Enter a character: $'
+    newline DB 0DH,0AH,'$'
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    
+    MOV AH, 09H
+    LEA DX, msg1
+    INT 21H
+
+    
+    MOV AH, 01H
+    INT 21H
+    MOV BL, AL      
+
+    
+    MOV AH, 09H
+    LEA DX, newline
+    INT 21H
+
+    
+    MOV CL, 50      
+
+PRINT_LOOP:
+    MOV DL, BL
+    MOV AH, 02H
+    INT 21H        
+
+    DEC CL          
+    JNZ PRINT_LOOP  
+
+    
+    MOV AH, 4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+
+task:7)
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    msg DB 'Enter two characters: $'
+    newline DB 0DH,0AH,'$'
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    
+    MOV AH, 09H
+    LEA DX, msg
+    INT 21H
+
+    
+    MOV AH, 01H
+    INT 21H
+    MOV BL, AL       
+
+    
+    MOV AH, 01H
+    INT 21H
+    MOV BH, AL       
+
+    
+    MOV AH, 09H
+    LEA DX, newline
+    INT 21H
+
+    
+    MOV DL, BL
+    MOV AH, 02H
+    INT 21H
+
+    MOV DL, BH
+    MOV AH, 02H
+    INT 21H
+
+    
+    MOV AH, 09H
+    LEA DX, newline
+    INT 21H
+
+    
+    MOV DL, BL
+    MOV AH, 02H
+    INT 21H
+
+    MOV DL, BH
+    MOV AH, 02H
+    INT 21H
+
+    
+    MOV AH, 4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+
+
+
+
+slide 5
+task:1
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+.CODE
+
+MAIN PROC
+
+    
+    CMP AX, 0
+    JL  NEGATIVE     
+
+    JMP END_IF       
+
+NEGATIVE:
+    MOV BX, -1       
+
+END_IF:
+
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
+
+task:2
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+.CODE
+MAIN PROC
+    
+
+    CMP AL, 0        
+    JL  NEGATIVE     
+
+POSITIVE:
+    MOV AH, 00H      
+    JMP END_IF       
+
+NEGATIVE:
+    MOV AH, 0FFH     
+
+END_IF:
+
+    MOV AH, 4CH
+    INT 21H          
+
+MAIN ENDP
+END MAIN
+
+task:3
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+msg  DB 0Dh,0Ah,"Enter a character: $"
+.CODE
+
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    
+    MOV AH, 09H
+    LEA DX, msg
+    INT 21H
+
+    
+    MOV AH, 01H
+    INT 21H
+    MOV DL, AL           
+
+    
+    CMP DL, 'A'
+    JL  END_IF          
+
+    CMP DL, 'z'
+    JG  END_IF           
+
+    
+    MOV AH, 02H
+    INT 21H
+
+END_IF:
+
+    
+    MOV AH, 4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+
+task:4
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+.CODE
+
+MAIN PROC
+
+
+   
+    CMP AX, BX
+    JGE END_IF            
+
+    
+    CMP BX, CX
+    JGE ELSE_PART         
+
+    
+    MOV AX, 0
+    JMP END_NESTED_IF
+
+ELSE_PART:
+    
+    MOV BX, 0
+
+END_NESTED_IF:
+END_IF:
+
+    
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
+
+task:5
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+.CODE
+
+MAIN PROC
+
+
+  
+    CMP AX, BX
+    JL  TRUE_CONDITION        
+
+    
+    CMP BX, CX
+    JL  TRUE_CONDITION        
+
+    
+    MOV DX, 1
+    JMP END_IF
+
+TRUE_CONDITION:
+    MOV DX, 0
+
+END_IF:
+
+    
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
+
+task:6
+
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+.CODE
+
+MAIN PROC
+
+
+    
+    CMP AX, BX
+    JL  THEN_PART_FIRST      
+
+    
+    
+    CMP BX, CX
+    JL  THEN_PART_SECOND     
+
+    
+    MOV CX, 0
+    JMP END_IF
+
+THEN_PART_FIRST:
+    MOV AX, 0
+    JMP END_IF
+
+THEN_PART_SECOND:
+    MOV BX, 0
+
+END_IF:
+
+    
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
+
+task:7
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+.CODE
+
+MAIN PROC
+    
+    
+    
+    CMP AL, 1
+    JE  DISPLAY_O
+    CMP AL, 3
+    JE  DISPLAY_O
+
+    
+    CMP AL, 2
+    JE  DISPLAY_E
+    CMP AL, 4
+    JE  DISPLAY_E
+
+    
+    JMP END_PROGRAM
+
+DISPLAY_O:
+    MOV DL, 'o'
+    MOV AH, 02H
+    INT 21H
+    JMP END_PROGRAM
+
+DISPLAY_E:
+    MOV DL, 'e'
+    MOV AH, 02H
+    INT 21H
+
+END_PROGRAM:
+    
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
+

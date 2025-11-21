@@ -1,0 +1,25 @@
+.MODEL SMALL
+.STACK 100H 
+.DATA
+;VARIABLE
+A DB "HELLO WORLD$" ;DECLAIREA
+B DB "Result: $"
+NEWLINE DB 0AH,0DH,"$"
+ 
+.CODE 
+MAIN PROC 
+    MOV AX,@DATA 
+    MOV DS,AX
+    ;printing A    
+    MOV AH,9h
+    LEA DX,A
+    INT 21H 
+    MOV AH,9h
+    LEA DX,NEWLINE
+    INT 21H
+    ;EXIT
+    MOV AH,4CH 
+    INT 21H
+    MAIN ENDP
+END
+

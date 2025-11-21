@@ -1,0 +1,344 @@
+Number 1
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    MSG1 DB 'Input: $'
+    MSG_SUM DB 0DH,0AH,'Sum is: $'
+    MSG_GT DB 0DH,0AH,'Sum is greater than 12$'
+    MSG_LT DB 0DH,0AH,'Sum is NOT greater than 12$'
+
+    N1  DB ?
+    N2  DB ?
+    SUM DB ?
+
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX
+
+; 1st promt ta dekhabe
+    MOV AH,09
+    LEA DX,MSG1
+    INT 21H
+
+; first number input nibe
+
+    MOV AH,1
+    INT 21H
+    SUB AL,30H
+    MOV N1,AL
+
+; read second
+    MOV AH,1
+    INT 21H
+    SUB AL,30H
+    MOV N2,AL
+
+; SUM = N1 + N2
+    MOV AL,N1
+    ADD AL,N2
+    MOV SUM,AL
+
+; print "Sum is: "
+    MOV AH,09
+    LEA DX,MSG_SUM
+    INT 21H
+
+; print SUM
+    MOV AH,2
+    MOV DL,SUM
+    ADD DL,30H
+    INT 21H
+
+; check sum > 12 ?
+    CMP SUM,12
+    JG SHOW_GT
+
+; sum <= 12
+    MOV AH,09
+    LEA DX,MSG_LT
+    INT 21H
+    JMP EXIT
+
+SHOW_GT:
+    MOV AH,09
+    LEA DX,MSG_GT
+    INT 21H
+
+EXIT:
+    MOV AH,4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
+
+
+Number 2
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+    PROMPT DB "ENTER THREE INITIALS:$"
+    ERRMSG DB 0DH,0AH,"INVALID INPUT$"
+    NL DB 0DH,0AH,"$"
+    A DB ?
+    B DB ?
+    C DB ?
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX
+
+    ; Show prompt
+    LEA DX,PROMPT
+    MOV AH,9
+    INT 21H
+
+    ; Input A
+    MOV AH,1
+    INT 21H
+    MOV A,AL
+    CMP AL,'A'
+    JL BAD
+    CMP AL,'Z'
+    JG BAD
+
+    ; Input B
+    MOV AH,1
+    INT 21H
+    MOV B,AL
+    CMP AL,'A'
+    JL BAD
+    CMP AL,'Z'
+    JG BAD
+
+    ; Input C
+    MOV AH,1
+    INT 21H
+    MOV C,AL
+    CMP AL,'A'
+    JL BAD
+    CMP AL,'Z'
+    JG BAD
+
+    ; print newline
+    LEA DX,NL
+    MOV AH,9
+    INT 21H
+
+    ; print reverse: C B A
+    MOV AH,2
+
+    MOV DL,C
+    INT 21H
+    LEA DX,NL
+    MOV AH,9
+    INT 21H
+
+    MOV DL,B
+    MOV AH,2
+    INT 21H
+    LEA DX,NL
+    MOV AH,9
+    INT 21H
+
+    MOV DL,A
+    MOV AH,2
+    INT 21H
+
+    JMP EXIT
+
+BAD:
+    LEA DX,ERRMSG
+    MOV AH,9
+    INT 21H
+
+EXIT:
+    MOV AH,4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+
+Number 3
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+    MSG1 DB "Enter 1st digit:$"
+    MSG2 DB "Enter 2nd digit:$"
+    MSG3 DB "Enter 3rd digit:$"
+    SMMSG DB 0DH,0AH,"Smallest: $"
+    LGMSG DB 0DH,0AH,"Largest: $"
+    A DB ?
+    B DB ?
+    C DB ?
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX
+
+    ; Read A
+    LEA DX,MSG1
+    MOV AH,9
+    INT 21H
+    MOV AH,1
+    INT 21H
+    SUB AL,'0'
+    MOV A,AL
+
+    ; Read B
+    LEA DX,MSG2
+    MOV AH,9
+    INT 21H
+    MOV AH,1
+    INT 21H
+    SUB AL,'0'
+    MOV B,AL
+
+    ; Read C
+    LEA DX,MSG3
+    MOV AH,9
+    INT 21H
+    MOV AH,1
+    INT 21H
+    SUB AL,'0'
+    MOV C,AL
+
+    ; ---- Find smallest ? AL ----
+    MOV AL,A
+    CMP B,AL
+    JL SM_B
+    CMP C,AL
+    JL SM_C
+    JMP PRINT_SM
+
+SM_B:
+    MOV AL,B
+    CMP C,AL
+    JL SM_C
+    JMP PRINT_SM
+
+SM_C:
+    MOV AL,C
+
+PRINT_SM:
+    LEA DX,SMMSG
+    MOV AH,9
+    INT 21H
+    ADD AL,'0'
+    MOV DL,AL
+    MOV AH,2
+    INT 21H
+
+    ; ---- Find largest ? AL ----
+    MOV AL,A
+    CMP B,AL
+    JG LG_B
+    CMP C,AL
+    JG LG_C
+    JMP PRINT_LG
+
+LG_B:
+    MOV AL,B
+    CMP C,AL
+    JG LG_C
+    JMP PRINT_LG
+
+LG_C:
+    MOV AL,C
+
+PRINT_LG:
+    LEA DX,LGMSG
+    MOV AH,9
+    INT 21H
+    ADD AL,'0'
+    MOV DL,AL
+    MOV AH,2
+    INT 21H
+
+    MOV AH,4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+
+Number 4
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+    PROMPT DB "ENTER THREE INITIALS:$"
+    NL DB 0DH,0AH,"$"
+    A DB ?
+    B DB ?
+    C DB ?
+.CODE
+MAIN PROC
+    MOV AX,@DATA
+    MOV DS,AX
+
+    LEA DX,PROMPT
+    MOV AH,9
+    INT 21H
+
+    ; read 3 chars
+    MOV AH,1
+    INT 21H
+    MOV A,AL
+
+    MOV AH,1
+    INT 21H
+    MOV B,AL
+
+    MOV AH,1
+    INT 21H
+    MOV C,AL
+
+    ; print newline
+    LEA DX,NL
+    MOV AH,9
+    INT 21H
+
+    MOV AH,2
+    MOV DL,C
+    INT 21H
+    LEA DX,NL
+    MOV AH,9
+    INT 21H
+
+    MOV DL,B
+    MOV AH,2
+    INT 21H
+    LEA DX,NL
+    MOV AH,9
+    INT 21H
+
+    MOV DL,A
+    MOV AH,2
+    INT 21H
+
+    MOV AH,4CH
+    INT 21H
+MAIN ENDP
+END MAIN
+
+Number 5 (output)
+1
+3
+5
+7
+9
+11
+13
+15
+No Strees9
+
+
+Number 6 (output)
+
+YOUR NAME: MR. JOHN
+YOUR First NUMBER is: 5
+YOUR SECOND NUMBER is: 4
+SUM OF DIGITS: 9
+SUB OF DIGITS: 1
