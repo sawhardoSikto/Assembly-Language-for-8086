@@ -1,0 +1,146 @@
+;1
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    Amsg db 'AAA',0dh,0ah,'$'
+    newline db 0dh,0ah,'$'
+    Bmsg db 'BBB',0dh,0ah,'$'
+    Cmsg db 'CCC',0dh,0ah,'$'
+
+.CODE
+MAIN PROC
+    mov ax,@data
+    mov ds,ax
+
+    ; Print AAA 3 times
+    mov cx,3
+A_loop:
+    mov ah,09  ;string print kore
+    lea dx,Amsg   ;DX er moddhe kon jinis ta print korbo seta rekhe dite hoy 
+    int 21h
+    loop A_loop
+
+    ; Blank line
+    mov ah,09
+    lea dx,newline
+    int 21h
+
+    ; Print BBB 5 times
+    mov cx,5
+B_loop:
+    mov ah,09
+    lea dx,Bmsg
+    int 21h
+    loop B_loop
+
+    ; Print CCC 2 times
+    mov cx,2
+C_loop:
+    mov ah,09
+    lea dx,Cmsg
+    int 21h
+    loop C_loop
+
+    ; Exit
+    mov ah,4ch
+    int 21h
+MAIN ENDP
+END MAIN
+
+;2
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    space db ' $'
+    lucky db 'LUCKY ', '$'
+
+.CODE
+MAIN PROC
+    mov ax,@data
+    mov ds,ax
+
+    mov cx,30     ; loop 1?30
+    mov bl,1      ; number counter
+
+StartLoop:
+    mov al,bl
+    mov ah,0
+
+    ; Check multiple of 7 ? print "LUCKY"
+    mov dl,7
+    div dl         ; AL/DL ? AH = remainder
+    cmp ah,0
+    je PrintLucky
+
+    ; otherwise print number
+    mov dl,bl
+    add dl,30h
+    mov ah,02h
+    int 21h
+
+    ; print space
+    mov ah,09
+    lea dx,space
+    int 21h
+    jmp Continue
+
+PrintLucky:
+    mov ah,09
+    lea dx,lucky
+    int 21h
+
+Continue:
+    inc bl
+    loop StartLoop
+
+    mov ah,4ch
+    int 21h
+MAIN ENDP
+END MAIN
+
+;3
+
+.model small
+.stack 100h
+
+.data
+    star db '#'
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+
+    mov cx, 1          ; starting row = 1
+
+row_loop:
+    mov bx, cx         ; BX = how many '#' to print for this row
+
+print_loop:
+    mov dl, star
+    mov ah, 02h
+    int 21h
+
+    dec bx
+    jnz print_loop     ; loop until BX becomes 0
+
+    ; print newline
+    mov ah, 02h
+    mov dl, 0Dh
+    int 21h
+    mov dl, 0Ah
+    int 21h
+
+    inc cx             ; next row (cx = 2,3,4,...)
+    cmp cx, 11         ; stop after printing row 10
+    jne row_loop
+
+    mov ah, 4Ch
+    int 21h
+main endp
+end main
+
+

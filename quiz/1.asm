@@ -15,8 +15,8 @@ MAIN PROC
     ; Print AAA 3 times
     mov cx,3
 A_loop:
-    mov ah,09
-    lea dx,Amsg
+    mov ah,09  ;string print kore
+    lea dx,Amsg   ;DX er moddhe kon jinis ta print korbo seta rekhe dite hoy 
     int 21h
     loop A_loop
 
